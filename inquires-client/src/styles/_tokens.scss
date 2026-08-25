@@ -1,0 +1,55 @@
+@use 'sass:map';
+
+// The whole brand + semantic palette in one map — see the design canvas's Design System page
+// for the rationale behind each choice (why green/orange, why status/priority get their own hues).
+$palette: (
+  brand: (
+    green-900: #0e3b2c,
+    green-700: #1e6b4c,
+    green-600: #26895f,
+    green-500: #2fa374,
+    green-100: #e1f0e6,
+    orange-800: #9c4710,
+    orange-700: #b25313,
+    orange-500: #ee8a34,
+    orange-100: #fce9d3,
+  ),
+  neutral: (
+    bg: #f6f8f4,
+    surface: #ffffff,
+    surface-alt: #f1f3ed,
+    border: #dee4d8,
+    text-1: #182620,
+    text-2: #54655a,
+    text-3: #8b978b,
+  ),
+  status: (
+    new: #2c4e9e,
+    new-bg: #e7eefc,
+    new-dot: #3e6fd9,
+    in-progress: #9c4710,
+    in-progress-bg: #fce9d3,
+    in-progress-dot: #ee8a34,
+    waiting: #7a5a12,
+    waiting-bg: #f5ead1,
+    waiting-dot: #b9862a,
+    completed: #1e6b4c,
+    completed-bg: #e1f0e6,
+    completed-dot: #26895f,
+  ),
+  priority: (
+    low: #2a6b54,
+    low-bg: #e4f3ec,
+    low-dot: #3e8e71,
+    medium: #7a5a12,
+    medium-bg: #f5ead1,
+    medium-dot: #b9862a,
+    high: #b23838,
+    high-bg: #fbe4e4,
+    high-dot: #d14e4e,
+  ),
+);
+
+@function token($group, $name) {
+  @return map.get($palette, $group, $name);
+}

@@ -1,0 +1,26 @@
+@use '../../../styles/tokens' as tokens;
+
+.page {
+  padding: 32px 40px 48px;
+}
+
+.page__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.page__title {
+  font-family: Rubik, sans-serif;
+  font-weight: 800;
+  font-size: 26px;
+  color: tokens.token(brand, green-900);
+  margin: 0 0 4px;
+}
+
+.page__subtitle {
+  font-size: 13.5px;
+  color: tokens.token(neutral, text-2);
+  margin: 0;
+}

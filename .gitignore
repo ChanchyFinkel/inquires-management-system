@@ -1,0 +1,61 @@
+## ===== .NET =====
+bin/
+obj/
+out/
+publish/
+
+## Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ll]og/
+[Ll]ogs/
+
+## Test results
+TestResults/
+coverage/
+*.trx
+*.coverage
+*.coveragexml
+
+## Secrets / local config (do not commit connection strings or credentials)
+appsettings.Development.json
+appsettings.*.local.json
+*.pfx
+*.pem
+secrets.json
+
+## ===== Angular / Node =====
+node_modules/
+dist/
+tmp/
+out-tsc/
+.angular/
+.angular/cache/
+npm-debug.log*
+yarn-error.log*
+
+## Environment files with secrets (keep environment.ts if it has no real secrets)
+.env
+.env.*
+
+## ===== Editors / OS =====
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+*.swp
+
+## ===== Database local files (if using LocalDB / SQLite for dev) =====
+*.mdf
+*.ldf
+*.db

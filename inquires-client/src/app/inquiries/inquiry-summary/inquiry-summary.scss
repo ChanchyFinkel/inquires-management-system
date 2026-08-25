@@ -1,0 +1,46 @@
+@use '../../../styles/tokens' as tokens;
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 26px;
+}
+
+.summary__card {
+  background: tokens.token(neutral, surface);
+  border-radius: 12px;
+  padding: 16px 18px;
+  border-inline-start: 3px solid tokens.token(neutral, border);
+  box-shadow:
+    0 1px 2px rgba(14, 59, 44, 0.06),
+    0 2px 6px rgba(14, 59, 44, 0.07);
+}
+
+.summary__label {
+  font-family: Heebo, sans-serif;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: tokens.token(neutral, text-2);
+}
+
+.summary__count {
+  font-family: Rubik, sans-serif;
+  font-weight: 800;
+  font-size: 26px;
+  color: tokens.token(neutral, text-1);
+  margin-top: 4px;
+}
+
+.summary__card--new {
+  border-inline-start-color: tokens.token(status, new-dot);
+}
+.summary__card--in-progress {
+  border-inline-start-color: tokens.token(status, in-progress-dot);
+}
+.summary__card--waiting {
+  border-inline-start-color: tokens.token(status, waiting-dot);
+}
+.summary__card--completed {
+  border-inline-start-color: tokens.token(status, completed-dot);
+}

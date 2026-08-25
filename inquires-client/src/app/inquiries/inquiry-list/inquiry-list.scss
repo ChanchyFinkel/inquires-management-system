@@ -1,0 +1,156 @@
+@use '../../../styles/tokens' as tokens;
+
+.list-card {
+  background: tokens.token(neutral, surface);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow:
+    0 1px 2px rgba(14, 59, 44, 0.06),
+    0 2px 6px rgba(14, 59, 44, 0.07);
+}
+
+.list-card--centered {
+  min-height: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+table {
+  width: 100%;
+}
+
+.cell--muted {
+  color: tokens.token(neutral, text-2);
+}
+
+.cell--mono {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 12.5px;
+}
+
+.cell--placeholder {
+  color: tokens.token(neutral, text-3);
+}
+
+// --- skeleton loading state ---
+
+.skeleton-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    text-align: start;
+    padding: 12px 16px;
+    font-family: Heebo, sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: tokens.token(neutral, text-2);
+    border-bottom: 1.5px solid tokens.token(neutral, border);
+  }
+
+  td {
+    padding: 16px;
+    border-bottom: 1px solid tokens.token(neutral, border);
+  }
+}
+
+@keyframes shimmer {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.skeleton {
+  display: block;
+  background: tokens.token(neutral, surface-alt);
+  border-radius: 6px;
+  height: 13px;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+.skeleton--wide {
+  width: 85%;
+}
+.skeleton--medium {
+  width: 65%;
+}
+.skeleton--narrow {
+  width: 55%;
+}
+.skeleton--badge {
+  width: 70px;
+  height: 20px;
+  border-radius: 999px;
+}
+.skeleton--badge-sm {
+  width: 55px;
+  height: 20px;
+  border-radius: 999px;
+}
+
+// --- empty / error state ---
+
+.state-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 400px;
+  padding: 32px;
+}
+
+.state-block__icon {
+  width: 74px;
+  height: 74px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 22px;
+
+  mat-icon {
+    font-size: 34px;
+    width: 34px;
+    height: 34px;
+  }
+}
+
+.state-block__icon--error {
+  background: #fbe4e4;
+  mat-icon {
+    color: #d14e4e;
+  }
+}
+
+.state-block__icon--empty {
+  background: tokens.token(brand, green-100);
+  mat-icon {
+    color: tokens.token(brand, green-700);
+  }
+}
+
+.state-block__title {
+  font-family: Rubik, sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  color: tokens.token(brand, green-900);
+  margin: 0 0 8px;
+}
+
+.state-block__text {
+  font-size: 13.5px;
+  color: tokens.token(neutral, text-2);
+  line-height: 1.6;
+  margin: 0 0 22px;
+}
+
+.state-block__cta {
+  background: tokens.token(brand, orange-500);
+  color: #fff;
+  border-radius: 20px;
+}

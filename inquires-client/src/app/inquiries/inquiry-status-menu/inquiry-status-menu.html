@@ -1,0 +1,30 @@
+<button
+  mat-button
+  class="status-menu__trigger"
+  [matMenuTriggerFor]="menu"
+  (menuOpened)="onMenuOpened()"
+>
+  שינוי סטטוס ▾
+</button>
+
+<mat-menu #menu="matMenu" class="status-menu__panel">
+  <div class="status-menu__header" (click)="$event.stopPropagation()">בחירת סטטוס</div>
+
+  <mat-radio-group
+    class="status-menu__options"
+    [ngModel]="pendingStatusId()"
+    (ngModelChange)="pendingStatusId.set($event)"
+    (click)="$event.stopPropagation()"
+  >
+    @for (status of statuses(); track status.statusId) {
+      <mat-radio-button class="status-menu__option" [value]="status.statusId">
+        {{ statusLabel(status.name) }}
+      </mat-radio-button>
+    }
+  </mat-radio-group>
+
+  <div class="status-menu__actions" (click)="$event.stopPropagation()">
+    <button mat-button (click)="cancel()">ביטול</button>
+    <button mat-flat-button class="status-menu__save" [disabled]="!canSave()" (click)="save()">שמירה</button>
+  </div>
+</mat-menu>

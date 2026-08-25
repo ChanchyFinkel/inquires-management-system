@@ -1,0 +1,31 @@
+@use '../../../styles/tokens' as tokens;
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.filter-bar__search {
+  width: 300px;
+}
+
+.filter-bar__select {
+  width: 160px;
+}
+
+.filter-bar__clear {
+  // Pushes the button to the far end of the row's free space — the left edge in this
+  // RTL app (margin-inline-start absorbs space on the "start" side, i.e. the right in
+  // RTL, shoving the element toward "end", i.e. the left).
+  margin-inline-start: auto;
+  color: tokens.token(brand, green-700);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    margin-inline-end: 4px;
+  }
+}

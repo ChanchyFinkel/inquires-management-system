@@ -1,0 +1,8 @@
+<div class="summary">
+  @for (card of cards(); track card.statusKey) {
+    <div class="summary__card" [class]="'summary__card--' + card.statusKey">
+      <div class="summary__label">{{ card.label }}</div>
+      <div class="summary__count">{{ card.count }}</div>
+    </div>
+  }
+</div>

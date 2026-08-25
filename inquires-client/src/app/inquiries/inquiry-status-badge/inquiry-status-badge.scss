@@ -1,0 +1,44 @@
+@use '../../../styles/tokens' as tokens;
+
+:host {
+  display: inline-flex;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-family: Heebo, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+@each $status in (new, in-progress, waiting, completed) {
+  .badge--status-#{$status} {
+    background: tokens.token(status, #{$status}-bg);
+    color: tokens.token(status, $status);
+
+    .badge__dot {
+      background: tokens.token(status, #{$status}-dot);
+    }
+  }
+}
+
+@each $priority in (low, medium, high) {
+  .badge--priority-#{$priority} {
+    background: tokens.token(priority, #{$priority}-bg);
+    color: tokens.token(priority, $priority);
+
+    .badge__dot {
+      background: tokens.token(priority, #{$priority}-dot);
+    }
+  }
+}

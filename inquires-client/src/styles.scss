@@ -1,0 +1,35 @@
+// Angular Material theming, seeded with the brand's green/orange rather than Material's
+// stock azure/blue — every mat-* component inherits this automatically.
+@use '@angular/material' as mat;
+@use './styles/tokens' as tokens;
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        theme-type: light,
+        primary: mat.$green-palette,
+        tertiary: mat.$orange-palette,
+      ),
+      typography: (
+        brand-family: 'Rubik, sans-serif',
+        plain-family: 'Heebo, sans-serif',
+      ),
+      density: 0,
+    )
+  );
+}
+
+body {
+  color-scheme: light;
+  background-color: tokens.token(neutral, bg);
+  color: tokens.token(neutral, text-1);
+  font: var(--mat-sys-body-medium);
+  margin: 0;
+  height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}

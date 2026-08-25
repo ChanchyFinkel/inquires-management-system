@@ -1,0 +1,136 @@
+@switch (viewState().status) {
+  @case ('loading') {
+    <div class="list-card">
+      <table class="skeleton-table">
+        <thead>
+          <tr>
+            <th>כותרת הפניה</th>
+            <th>ארגון</th>
+            <th>סטטוס</th>
+            <th>עדיפות</th>
+            <th>תאריך יצירה</th>
+            <th>עדכון אחרון</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of skeletonRows; track $index) {
+            <tr>
+              <td><span class="skeleton skeleton--wide"></span></td>
+              <td><span class="skeleton skeleton--medium"></span></td>
+              <td><span class="skeleton skeleton--badge"></span></td>
+              <td><span class="skeleton skeleton--badge-sm"></span></td>
+              <td><span class="skeleton skeleton--narrow"></span></td>
+              <td><span class="skeleton skeleton--narrow"></span></td>
+              <td></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  @case ('error') {
+    <div class="list-card list-card--centered">
+      <div class="state-block">
+        <div class="state-block__icon state-block__icon--error">
+          <mat-icon>error_outline</mat-icon>
+        </div>
+        <h3 class="state-block__title">טעינת הפניות נכשלה</h3>
+        <p class="state-block__text">
+          {{ viewState().error?.message }}
+        </p>
+        <button mat-flat-button class="state-block__cta" (click)="retry()">
+          <mat-icon>refresh</mat-icon>
+          נסה שוב
+        </button>
+      </div>
+    </div>
+  }
+
+  @case ('empty') {
+    <div class="list-card list-card--centered">
+      <div class="state-block">
+        <div class="state-block__icon state-block__icon--empty">
+          <mat-icon>search_off</mat-icon>
+        </div>
+        <h3 class="state-block__title">לא נמצאו פניות התואמות את הסינון</h3>
+        <p class="state-block__text">נסו מונח חיפוש אחר או נקו את הסינון הפעיל.</p>
+        <button mat-flat-button class="state-block__cta" (click)="clearFilters()">נקה סינון</button>
+      </div>
+    </div>
+  }
+
+  @case ('data') {
+    <div class="list-card">
+      <table
+        mat-table
+        [dataSource]="viewState().items"
+        matSort
+        [matSortActive]="currentSort().sortBy"
+        [matSortDirection]="currentSort().sortDescending ? 'desc' : 'asc'"
+        (matSortChange)="onSort($event)"
+      >
+        <ng-container matColumnDef="Title">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>כותרת הפניה</th>
+          <td mat-cell *matCellDef="let inquiry">{{ inquiry.title }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="OrganizationName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>ארגון</th>
+          <td mat-cell *matCellDef="let inquiry" class="cell--muted">{{ inquiry.organizationName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="Status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>סטטוס</th>
+          <td mat-cell *matCellDef="let inquiry">
+            <app-inquiry-status-badge kind="status" [value]="inquiry.statusName" />
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="Priority">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>עדיפות</th>
+          <td mat-cell *matCellDef="let inquiry">
+            <app-inquiry-status-badge kind="priority" [value]="inquiry.priorityName" />
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="CreatedAt">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>תאריך יצירה</th>
+          <td mat-cell *matCellDef="let inquiry" class="cell--muted cell--mono">
+            {{ inquiry.createdAt | date: 'd בMMM y' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="UpdatedAt">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>עדכון אחרון</th>
+          <td mat-cell *matCellDef="let inquiry" class="cell--muted cell--mono">
+            @if (wasUpdated(inquiry)) {
+              {{ inquiry.updatedAt | date: 'd בMMM y' }}
+            } @else {
+              <span class="cell--placeholder">--</span>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let inquiry">
+            <app-inquiry-status-menu [inquiry]="inquiry" />
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      <mat-paginator
+        [length]="viewState().totalCount"
+        [pageIndex]="viewState().pageNumber - 1"
+        [pageSize]="viewState().pageSize"
+        [pageSizeOptions]="[10, 20, 50]"
+        (page)="onPage($event)"
+      />
+    </div>
+  }
+}

@@ -1,0 +1,31 @@
+<div class="filter-bar">
+  <mat-form-field appearance="outline" class="filter-bar__search" subscriptSizing="dynamic">
+    <mat-icon matPrefix>search</mat-icon>
+    <input matInput [formControl]="searchControl" placeholder="חיפוש ארגונים…" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="filter-bar__select" subscriptSizing="dynamic">
+    <mat-select placeholder="סטטוס" [value]="selectedStatusId()" (selectionChange)="onStatusChange($event.value)">
+      <mat-option [value]="null">סטטוס</mat-option>
+      @for (status of statuses(); track status.statusId) {
+        <mat-option [value]="status.statusId">{{ statusLabel(status.name) }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="filter-bar__select" subscriptSizing="dynamic">
+    <mat-select placeholder="עדיפות" [value]="selectedPriorityId()" (selectionChange)="onPriorityChange($event.value)">
+      <mat-option [value]="null">עדיפות</mat-option>
+      @for (priority of priorities(); track priority.priorityId) {
+        <mat-option [value]="priority.priorityId">{{ priorityLabel(priority.name) }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  @if (hasActiveFilters()) {
+    <button mat-button class="filter-bar__clear" (click)="clearFilters()">
+      <mat-icon>close</mat-icon>
+      נקה סינון
+    </button>
+  }
+</div>

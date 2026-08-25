@@ -1,0 +1,52 @@
+@use '../../../styles/tokens' as tokens;
+
+:host {
+  display: inline-flex;
+}
+
+.status-menu__trigger {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: tokens.token(brand, green-700);
+}
+
+.status-menu__header {
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: tokens.token(neutral, text-3);
+  border-bottom: 1px solid tokens.token(neutral, border);
+}
+
+.status-menu__options {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0;
+  min-width: 200px;
+}
+
+.status-menu__option {
+  padding: 4px 14px;
+}
+
+.status-menu__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 14px;
+  border-top: 1px solid tokens.token(neutral, border);
+  background: tokens.token(neutral, surface-alt);
+}
+
+// mat-flat-button's `color` input is limited to primary/accent/warn — the tertiary (orange)
+// role from our theme is reached directly through Material's generated system variables.
+.status-menu__save {
+  background: var(--mat-sys-tertiary);
+  color: var(--mat-sys-on-tertiary);
+
+  &[disabled] {
+    background: tokens.token(neutral, border);
+    color: tokens.token(neutral, text-3);
+  }
+}

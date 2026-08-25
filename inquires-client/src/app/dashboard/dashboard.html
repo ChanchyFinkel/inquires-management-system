@@ -1,0 +1,50 @@
+<div class="page">
+  <div class="page__header">
+    <h1 class="page__title">לוח בקרה</h1>
+    <p class="page__subtitle">
+      נתונים מ־<code>GET /api/inquiries/summary</code> · שמור במטמון 1–2 דקות, מתאפס בעדכון סטטוס
+    </p>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="card donut-card">
+      <div class="card__title">לפי סטטוס</div>
+
+      <div class="donut" [style.background]="conicGradient(slices())">
+        <div class="donut__hole">
+          <div class="donut__total">{{ total() }}</div>
+          <div class="donut__total-label">סה״כ פניות</div>
+        </div>
+      </div>
+
+      <div class="legend">
+        @for (slice of slices(); track slice.statusKey) {
+          <div class="legend__row">
+            <div class="legend__label">
+              <span class="legend__dot" [class]="'legend__dot--' + slice.statusKey"></span>
+              <span>{{ slice.label }}</span>
+            </div>
+            <span class="legend__value">{{ slice.count }} · {{ slice.percent * 100 | number: '1.0-0' }}%</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card__title">כמות לפי סטטוס</div>
+      <div class="bars">
+        @for (slice of slices(); track slice.statusKey) {
+          <div class="bar-row">
+            <div class="bar-row__head">
+              <span>{{ slice.label }}</span>
+              <span class="bar-row__count">{{ slice.count }}</span>
+            </div>
+            <div class="bar-track" [class]="'bar-track--' + slice.statusKey">
+              <div class="bar-fill" [style.width.%]="(slice.count / maxCount()) * 100"></div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

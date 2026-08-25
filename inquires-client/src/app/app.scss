@@ -1,0 +1,89 @@
+@use '../styles/tokens' as tokens;
+
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.shell {
+  height: 100%;
+}
+
+.shell__sidenav {
+  width: 216px;
+  background: tokens.token(brand, green-900);
+  padding: 26px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  border: none;
+
+  // mat-nav-list sets its own text/icon color on its internal elements (defaults to
+  // near-black for a light theme) — that wins over color inherited from an ancestor no
+  // matter how the ancestor's own color is declared, so it has to be overridden through
+  // Material's own tokens, not through .shell__nav-link's `color`.
+  --mat-list-list-item-label-text-color: #fff;
+  --mat-list-list-item-hover-label-text-color: #fff;
+  --mat-list-list-item-leading-icon-color: #fff;
+  --mat-list-list-item-hover-leading-icon-color: #fff;
+}
+
+.shell__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px;
+}
+
+.shell__brand-mark {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: tokens.token(brand, orange-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+
+  mat-icon {
+    color: tokens.token(brand, green-900);
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.shell__brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.shell__brand-name {
+  font-family: Rubik, sans-serif;
+  font-weight: 800;
+  font-size: 15px;
+  color: #fff;
+}
+
+.shell__brand-tagline {
+  font-size: 11px;
+  color: #9fb6a9;
+}
+
+.shell__nav {
+  padding: 0;
+}
+
+.shell__nav-link {
+  border-radius: 20px !important;
+  margin-bottom: 2px;
+}
+
+.shell__nav-link--active {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+.shell__content {
+  background: tokens.token(neutral, bg);
+}
