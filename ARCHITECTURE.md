@@ -1,4 +1,4 @@
-# Architecture Plan — Inquiries Management System (Inquires)
+# Architecture Plan — Inquiries Management System (Inquiries)
 
 Full architecture plan for the Full Stack exam project, covering: DB First approach, separate `Status`/`Priority` tables (not enums) with foreign keys, a 4-project server layering with explicit dependency direction, a Cache challenge implementation, a global error-handling middleware, efficient filtering/sorting design, and PascalCase naming for all server-side methods.
 
@@ -68,52 +68,52 @@ A separate script (`Seed.sql`, or a small .NET seeding console) generates random
 
 ```
                 ┌───────────────────┐
-                │   Inquires.Api      │  Controllers, Middleware, Program.cs
+                │   Inquiries.Api      │  Controllers, Middleware, Program.cs
                 └─────────┬──────────┘
                           │ references
                 ┌─────────▼──────────┐
-                │ Inquires.Services   │  Business Logic, Interfaces
+                │ Inquiries.Services   │  Business Logic, Interfaces
                 └─────────┬──────────┘
                           │ references
                 ┌─────────▼──────────┐
-                │   Inquires.Data     │  DbContext, Entities, Repositories
+                │   Inquiries.Data     │  DbContext, Entities, Repositories
                 └─────────▲──────────┘
                           │ references
                 ┌─────────┴──────────┐
-                │   Inquires.DTO      │  Request/Response Models, Mapping
+                │   Inquiries.DTO      │  Request/Response Models, Mapping
                 └────────────────────┘
 ```
 
 | Project | Responsibility | References |
 |---|---|---|
-| **Inquires.Data** | `DbContext` (scaffolded from the DB), Entities (`Inquiry`, `Status`, `Priority`), Repository interfaces + implementations, filter/query specification objects | — (base layer, no references to other projects) |
-| **Inquires.DTO** | `InquiryDto`, `CreateInquiryRequest`, `UpdateStatusRequest`, `PagedResult<T>`, `InquiryQueryParameters`, and mapping extensions (`static class InquiryMappingExtensions`) between Entity and DTO | `Inquires.Data` (needed to map Entity → DTO) |
-| **Inquires.Services** | Business logic: `IInquiryService`/`InquiryService`, validation, calls the repository, drives caching | `Inquires.Data`, `Inquires.DTO` |
-| **Inquires.Api** | Controllers (`InquiriesController`), `Program.cs`, `ExceptionHandlingMiddleware`, DI registration, Swagger | `Inquires.Services` (and transitively DTO) |
+| **Inquiries.Data** | `DbContext` (scaffolded from the DB), Entities (`Inquiry`, `Status`, `Priority`), Repository interfaces + implementations, filter/query specification objects | — (base layer, no references to other projects) |
+| **Inquiries.DTO** | `InquiryDto`, `CreateInquiryRequest`, `UpdateStatusRequest`, `PagedResult<T>`, `InquiryQueryParameters`, and mapping extensions (`static class InquiryMappingExtensions`) between Entity and DTO | `Inquiries.Data` (needed to map Entity → DTO) |
+| **Inquiries.Services** | Business logic: `IInquiryService`/`InquiryService`, validation, calls the repository, drives caching | `Inquiries.Data`, `Inquiries.DTO` |
+| **Inquiries.Api** | Controllers (`InquiriesController`), `Program.cs`, `ExceptionHandlingMiddleware`, DI registration, Swagger | `Inquiries.Services` (and transitively DTO) |
 
 **Key point for the interview:** the Api project never touches Data directly — every DB access goes through Services. This is a clean separation of concerns that lets the Data layer be swapped or mocked in tests without touching Api.
 
 ### Suggested folder layout per project
 
 ```
-Inquires.Data/
+Inquiries.Data/
   Entities/          -> Inquiry.cs, Status.cs, Priority.cs
-  Context/            -> InquiresDbContext.cs
+  Context/            -> InquiriesDbContext.cs
   Repositories/       -> IInquiryRepository.cs, InquiryRepository.cs
   Specifications/     -> InquiryFilterSpecification.cs
 
-Inquires.DTO/
+Inquiries.DTO/
   Requests/            -> CreateInquiryRequest.cs, UpdateInquiryStatusRequest.cs, InquiryQueryParameters.cs
   Responses/           -> InquiryDto.cs, PagedResult.cs
   Mapping/             -> InquiryMappingExtensions.cs
 
-Inquires.Services/
+Inquiries.Services/
   Interfaces/          -> IInquiryService.cs
   Implementations/     -> InquiryService.cs
   Caching/              -> ICacheService.cs, MemoryCacheService.cs
   Exceptions/           -> NotFoundException.cs, ValidationException.cs
 
-Inquires.Api/
+Inquiries.Api/
   Controllers/          -> InquiriesController.cs
   Middleware/            -> ExceptionHandlingMiddleware.cs
   Program.cs
@@ -124,7 +124,7 @@ Inquires.Api/
 ## 3. Data & DTO Layer — Sample Code
 
 ```csharp
-// Inquires.Data/Entities/Inquiry.cs
+// Inquiries.Data/Entities/Inquiry.cs
 public class Inquiry
 {
     public int InquiryId { get; set; }
@@ -141,7 +141,7 @@ public class Inquiry
 ```
 
 ```csharp
-// Inquires.DTO/Requests/InquiryQueryParameters.cs
+// Inquiries.DTO/Requests/InquiryQueryParameters.cs
 public class InquiryQueryParameters
 {
     public string? SearchTerm { get; set; }
@@ -158,7 +158,7 @@ public class InquiryQueryParameters
 ```
 
 ```csharp
-// Inquires.DTO/Responses/PagedResult.cs
+// Inquiries.DTO/Responses/PagedResult.cs
 public class PagedResult<T>
 {
     public IReadOnlyList<T> Items { get; init; } = Array.Empty<T>();
@@ -178,7 +178,7 @@ public class PagedResult<T>
 ### 4.1 Building the query step by step (Repository)
 
 ```csharp
-// Inquires.Data/Repositories/InquiryRepository.cs
+// Inquiries.Data/Repositories/InquiryRepository.cs
 public async Task<(List<Inquiry> Items, int TotalCount)> GetFilteredAsync(
     InquiryQueryParameters query, CancellationToken ct)
 {
@@ -270,7 +270,7 @@ var summary = await _context.Inquiries
 ### 5.2 Implementation (IMemoryCache, easily swappable for Redis)
 
 ```csharp
-// Inquires.Services/Caching/ICacheService.cs
+// Inquiries.Services/Caching/ICacheService.cs
 public interface ICacheService
 {
     Task<T?> GetAsync<T>(string key);
@@ -281,7 +281,7 @@ public interface ICacheService
 ```
 
 ```csharp
-// Inquires.Services/Implementations/InquiryService.cs (relevant excerpt)
+// Inquiries.Services/Implementations/InquiryService.cs (relevant excerpt)
 public async Task<InquiryDto> UpdateStatusAsync(int id, int newStatusId, CancellationToken ct)
 {
     var inquiry = await _repository.GetByIdAsync(id, ct)
@@ -311,7 +311,7 @@ public async Task<InquiryDto> UpdateStatusAsync(int id, int newStatusId, Cancell
 ## 6. Global Error-Handling Middleware
 
 ```csharp
-// Inquires.Api/Middleware/ExceptionHandlingMiddleware.cs
+// Inquiries.Api/Middleware/ExceptionHandlingMiddleware.cs
 public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
@@ -417,10 +417,10 @@ this.searchControl.valueChanges.pipe(
 ## 9. Recommended Build Order (Submission Checklist)
 
 1. SQL script: `Statuses`, `Priorities`, `Inquiries` + seed of 10,000 records.
-2. `Scaffold-DbContext` → `Inquires.Data`.
-3. `Inquires.DTO` — models + mapping.
-4. `Inquires.Services` — `IInquiryService`, validation, `ICacheService`.
-5. `Inquires.Api` — Controller, `ExceptionHandlingMiddleware`, Swagger, DI registration.
+2. `Scaffold-DbContext` → `Inquiries.Data`.
+3. `Inquiries.DTO` — models + mapping.
+4. `Inquiries.Services` — `IInquiryService`, validation, `ICacheService`.
+5. `Inquiries.Api` — Controller, `ExceptionHandlingMiddleware`, Swagger, DI registration.
 6. One meaningful unit test (e.g. on `ApplySort`/filtering, or on `UpdateInquiryStatusAsync` with a mocked repository).
 7. Angular: `InquiryService` → `InquiryListComponent` → filtering/sorting/paging → loading/error/empty handling.
 8. `README.md`: run instructions, technologies used, brief solution structure, one key technology decision and its rationale (e.g. "separate Status/Priority tables instead of enums"), and one thing you'd improve with more time (e.g. moving to Redis, adding concurrency handling with `RowVersion`).

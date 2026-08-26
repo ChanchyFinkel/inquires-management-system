@@ -1,25 +1,34 @@
-# Inquires — מערכת ניהול פניות
+# Inquiries — מערכת ניהול פניות
 
 פרויקט בחינה Full Stack: שרת API ב-ASP.NET Core (4 פרויקטים בשכבות) + לקוח Angular, עם SQL Server כבסיס נתונים.
+
+## פונקציונליות עיקרית
+
+- הצגת רשימת פניות
+- חיפוש וסינון
+- מיון
+- עימוד
+- עדכון סטטוס
+- הצגת סיכומים
 
 ## 1. הוראות הרצה
 
 ### בסיס נתונים
-1. יש SQL Server / LocalDB זמין (מחרוזת החיבור המוגדרת: `(localdb)\mssqllocaldb`, מסד `InquiresDb`).
+1. יש SQL Server / LocalDB זמין (מחרוזת החיבור המוגדרת: `(localdb)\mssqllocaldb`, מסד `InquiriesDb`).
 2. הרצת הסקריפטים לפי הסדר (למשל דרך SSMS או `sqlcmd`):
    - `Database/Schema.sql` — יוצר את הטבלאות `Statuses`, `Priorities`, `Inquiries` (כולל אינדקסים).
    - `Database/Seed.sql` — מזין כ-10,000 רשומות לדוגמה.
 
 ### שרת (API)
 ```
-cd Inquires.Api
+cd Inquiries.Api
 dotnet run
 ```
 ה-API עולה על `http://localhost:5120` (וגם `https://localhost:7245`). ב-Development נגיש Swagger UI מהשורש.
 
 ### לקוח (Angular)
 ```
-cd inquires-client
+cd inquiries-client
 npm install
 npm start
 ```
@@ -27,7 +36,7 @@ npm start
 
 ### בדיקות (Unit Tests)
 ```
-dotnet test Inquires.Tests
+dotnet test Inquiries.Tests
 ```
 
 ## 2. טכנולוגיות בשימוש
@@ -41,28 +50,30 @@ dotnet test Inquires.Tests
 
 ## 3. מבנה הפתרון
 
-השרת בנוי כ-4 פרויקטים עם כיוון תלות חד-כיווני:
+השרת בנוי כ-4 פרויקטים עם כיוון תלות חד-כיווני (ללא מעגליות) — מי מפנה למי:
 
-```
-Inquires.Api  →  Inquires.Services  →  Inquires.Data  →  Inquires.DTO
-```
+- `Inquiries.Api` מפנה ל-`Inquiries.Services`
+- `Inquiries.Services` מפנה ל-`Inquiries.Data` ול-`Inquiries.DTO`
+- `Inquiries.DTO` מפנה ל-`Inquiries.Data`
 
-- **Inquires.Data** — `DbContext`, ישויות (`Inquiry`, `Status`, `Priority`), Repository לגישה לנתונים.
-- **Inquires.DTO** — מודלים של Request/Response ומיפויים בין Entity ל-DTO.
-- **Inquires.Services** — לוגיקה עסקית (`InquiryService`), ולידציה, ושירות קאשינג (`CacheService`).
-- **Inquires.Api** — Controller (`InquiriesController`), Middleware לטיפול גלובלי בשגיאות, הרשמת DI ו-Swagger.
+כלומר `Inquiries.DTO` תלוי רק ב-`Inquiries.Data` (כדי למפות Entity ל-DTO), ואילו `Inquiries.Services` הוא הפרויקט היחיד שתלוי גם ב-`Data` (גישה לנתונים) וגם ב-`DTO` (מודלים של הבקשות/תשובות).
 
-הסינון, המיון והעימוד מתבצעים כולם ברמת בסיס הנתונים (IQueryable), ולא בזיכרון. הלקוח (`inquires-client`) הוא אפליקציית Angular עצמאית תחת `inquiries/` (רשימה, סרגל סינון, תג סטטוס, סיכום) שמדברת עם ה-API בלבד דרך `InquiryService`.
+- **Inquiries.Data** — `DbContext`, ישויות (`Inquiry`, `Status`, `Priority`), Repository לגישה לנתונים.
+- **Inquiries.DTO** — מודלים של Request/Response ומיפויים בין Entity ל-DTO.
+- **Inquiries.Services** — לוגיקה עסקית (`InquiryService`), ולידציה, ושירות קאשינג (`CacheService`).
+- **Inquiries.Api** — Controller (`InquiriesController`), Middleware לטיפול גלובלי בשגיאות, הרשמת DI ו-Swagger.
+
+הסינון, המיון והעימוד מתבצעים כולם ברמת בסיס הנתונים (IQueryable), ולא בזיכרון. הלקוח (`inquiries-client`) הוא אפליקציית Angular עצמאית תחת `inquiries/` (רשימה, סרגל סינון, תג סטטוס, סיכום) שמדברת עם ה-API בלבד דרך `InquiryService`.
 
 ## 4. החלטה טכנולוגית משמעותית
 
 **שימוש בטבלאות `Statuses`/`Priorities` נפרדות עם מפתח זר, במקום Enum בקוד.**
 הבחירה מאפשרת להוסיף ערך חדש (סטטוס/עדיפות) בהזנת שורה בלבד, ללא deploy של קוד; שומרת על שלמות רפרנציאלית ברמת ה-DB; ומשאירה מקום להרחבה עתידית של כל ערך (למשל צבע או סדר תצוגה) בלי לשנות סכימה. המחיר: יש JOIN נוסף בשאילתות ומיפוי מפורש בין Id לשם בשכבת ה-DTO, אך זה נשאר קריא הודות ל-`InquiryMappingExtensions`.
 
-## 5. מה הייתי משפר/ת עם עוד זמן
+## 5. מה הייתי משפרת עם עוד זמן
 
-מעבר מ-`IMemoryCache` לקאש מבוזר (למשל Redis) — כרגע הקאש חי בזיכרון של המופע היחיד, מה שלא יעבוד נכון בסביבת production עם כמה מופעים של ה-API. הממשק `ICacheService` כבר מופשט כך שהחלפת המימוש לא תדרוש שינוי בקוד הקורא.
+טיפול ב-Concurrency באמצעות עמודת `RowVersion` (כפי שהוזכר ב-`ARCHITECTURE.md` כנקודת הרחבה עתידית). כרגע `UpdateStatusAsync` קורא רשומה, משנה אותה ושומר, בלי לבדוק אם מישהו אחר עדכן את אותה פנייה בינתיים — ז"א יש חשיפה ל-lost update. עם `RowVersion` (Optimistic Concurrency ב-EF Core) אפשר לזהות התנגשות כזו ולהחזיר שגיאה מתאימה (409 Conflict) במקום לדרוס בשקט עדכון של משתמש אחר.
 
 ## 6. שימוש בכלי AI
 
-נעשה שימוש ב-Claude Code (Anthropic) לאורך הפרויקט: בניית מסמך הארכיטקטורה הראשוני (`ARCHITECTURE.md`), הפקת ה-scaffolding לפרויקטים ולקבצים לפי המבנה שהוגדר, וכתיבת קובץ README זה. עיצוב הארכיטקטורה, ההחלטות המרכזיות והבדיקה הסופית של הקוד נעשו על ידי המפתח/ת.
+התכנון וההחלטות הטכנולוגיות בפרויקט היו שלי לאורך כל הדרך — מבנה השכבות, מודל הנתונים וההחלטות הארכיטקטוניות המתוארות בסעיפים 4-5. נעזרתי בכלי Claude Code (Anthropic) ככלי מסייע לכתיבת הקוד, תוך מעבר, בדיקה ותיקון שוטפים של הקוד שנוצר לאורך כל הפיתוח.

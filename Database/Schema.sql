@@ -1,5 +1,5 @@
 -- DB-first: this script is the source of truth for the schema. The EF Core entities in
--- Inquires.Data/Entities and the Fluent configuration in InquiresDbContext.OnModelCreating
+-- Inquiries.Data/Entities and the Fluent configuration in InquiriesDbContext.OnModelCreating
 -- are written to match what's defined here, not the other way around.
 IF OBJECT_ID(N'dbo.Inquiries', N'U') IS NULL
 BEGIN

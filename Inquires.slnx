@@ -1,7 +1,0 @@
-<Solution>
-  <Project Path="Inquires.Api/Inquires.Api.csproj" />
-  <Project Path="Inquires.Data/Inquires.Data.csproj" />
-  <Project Path="Inquires.DTO/Inquires.DTO.csproj" />
-  <Project Path="Inquires.Services/Inquires.Services.csproj" />
-  <Project Path="Inquires.Tests/Inquires.Tests.csproj" />
-</Solution>

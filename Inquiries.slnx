@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Inquiries.Api/Inquiries.Api.csproj" />
+  <Project Path="Inquiries.Data/Inquiries.Data.csproj" />
+  <Project Path="Inquiries.DTO/Inquiries.DTO.csproj" />
+  <Project Path="Inquiries.Services/Inquiries.Services.csproj" />
+  <Project Path="Inquiries.Tests/Inquiries.Tests.csproj" />
+</Solution>
