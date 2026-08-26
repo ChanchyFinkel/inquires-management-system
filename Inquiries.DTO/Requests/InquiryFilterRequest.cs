@@ -22,6 +22,6 @@ public class InquiryFilterRequest
     [Range(1, int.MaxValue)]
     public int PageNumber { get; set; } = 1;
 
-    [Range(1, 100)]
+    [AllowedValues(10, 20, 50)]
     public int PageSize { get; set; } = 20;
 }

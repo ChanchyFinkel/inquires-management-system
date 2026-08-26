@@ -46,9 +46,11 @@ public class InquiryService : IInquiryService
             && !query.PriorityId.HasValue
             && string.IsNullOrWhiteSpace(query.OrganizationName);
 
+        var firstPageCacheKey = $"{FirstPageCacheKey}:{query.PageSize}";
+
         if (isFirstPage)
         {
-            var cached = await _cache.GetAsync<PagedResult<InquiryResponse>>(FirstPageCacheKey, cancellationToken);
+            var cached = await _cache.GetAsync<PagedResult<InquiryResponse>>(firstPageCacheKey, cancellationToken);
             if (cached is not null)
             {
                 return cached;
@@ -62,7 +64,7 @@ public class InquiryService : IInquiryService
 
         if (isFirstPage)
         {
-            await _cache.SetAsync(FirstPageCacheKey, response, FirstPageTtl, cancellationToken: cancellationToken);
+            await _cache.SetAsync(firstPageCacheKey, response, FirstPageTtl, cancellationToken: cancellationToken);
         }
 
         return response;
@@ -92,7 +94,7 @@ public class InquiryService : IInquiryService
         await _repository.SaveChangesAsync(cancellationToken);
 
         await _cache.RemoveAsync(SummaryCacheKey, cancellationToken);
-        await _cache.RemoveAsync(FirstPageCacheKey, cancellationToken);
+        await _cache.RemoveByPrefixAsync(FirstPageCacheKey, cancellationToken);
 
         var response = inquiry.ToDto();
         var updatedStatus = (await GetStatusesAsync(cancellationToken))

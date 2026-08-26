@@ -20,7 +20,7 @@ builder.Services.AddScoped<IInquiryService, InquiryService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(AngularDevCorsPolicy, policy =>
-        policy.WithOrigins("http://localhost:4200", "https://blue-stone-046c61f0f.7.azurestaticapps.net")
+        policy.WithOrigins("http://localhost:4200", "https://inquiries-client-2994.azurewebsites.net")
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
@@ -45,6 +45,9 @@ app.UseHttpsRedirection();
 app.UseCors(AngularDevCorsPolicy);
 
 app.UseAuthorization();
+
+app.MapGet("/health", async (InquiriesDbContext dbContext, CancellationToken cancellationToken) =>
+    await dbContext.Database.CanConnectAsync(cancellationToken) ? Results.Ok("healthy") : Results.StatusCode(503));
 
 app.MapControllers();
 

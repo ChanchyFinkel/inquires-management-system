@@ -239,6 +239,9 @@ public class InquiryServiceTests
 
         public Task RemoveAsync(string key, CancellationToken cancellationToken = default)
             => Task.CompletedTask;
+
+        public Task RemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
+            => Task.CompletedTask;
     }
 
     private sealed class CountingFakeInquiryRepository : FakeInquiryRepository
@@ -287,6 +290,22 @@ public class InquiryServiceTests
         {
             _store.Remove(key);
             RemovedKeys.Add(key);
+            return Task.CompletedTask;
+        }
+
+        public Task RemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
+        {
+            // Mirrors CacheService.RemoveByPrefixAsync: drop every tracked key that starts with
+            // the prefix, and record the prefix itself in RemovedKeys so tests can assert on the
+            // same invalidation call InquiryService actually makes (it calls RemoveByPrefixAsync,
+            // not RemoveAsync, for the paged "first page" cache entries).
+            var matchingKeys = _store.Keys.Where(key => key.StartsWith(prefix, StringComparison.Ordinal)).ToList();
+            foreach (var key in matchingKeys)
+            {
+                _store.Remove(key);
+            }
+
+            RemovedKeys.Add(prefix);
             return Task.CompletedTask;
         }
     }

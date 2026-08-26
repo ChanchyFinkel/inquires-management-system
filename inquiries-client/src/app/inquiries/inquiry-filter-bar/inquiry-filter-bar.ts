@@ -27,10 +27,7 @@ export class InquiryFilterBar implements OnDestroy {
   protected readonly statuses = toSignal(this.state.statuses$, { initialValue: [] });
   protected readonly priorities = toSignal(this.state.priorities$, { initialValue: [] });
 
-  // The facade is the source of truth (inquiry-state.service.ts) — these controls only ever
-  // reflect it. Without this, "Clear filters" (triggered from inquiry-list's empty state) would
-  // reset the query but leave the search box and selects showing stale values.
-  protected readonly selectedStatusId = toSignal(
+   protected readonly selectedStatusId = toSignal(
     this.state.filterState$.pipe(map((filter) => filter.statusId ?? null)),
     { initialValue: null },
   );
@@ -47,16 +44,12 @@ export class InquiryFilterBar implements OnDestroy {
   );
 
   constructor() {
-    // User input -> facade: debounced + distinct so retyping doesn't flood the server; the
-    // facade's switchMap (inquiry-state.service.ts) cancels any in-flight request on its own.
     this.subscriptions.add(
       this.searchControl.valueChanges
         .pipe(debounceTime(300), distinctUntilChanged())
         .subscribe((term) => this.state.setSearchTerm(term)),
     );
 
-    // Facade -> user input: keep the box in sync with external changes (clearFilters()) without
-    // re-triggering the debounce pipe above (emitEvent: false).
     this.subscriptions.add(
       this.state.filterState$.subscribe((filter) => {
         const term = filter.searchTerm ?? '';

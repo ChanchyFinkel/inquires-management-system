@@ -10,4 +10,7 @@ public interface ICacheService
 
     /// <summary>Removes the entry for the exact <paramref name="key"/>, if present.</summary>
     Task RemoveAsync(string key, CancellationToken cancellationToken = default);
+
+    /// <summary>Removes every cached entry whose key starts with <paramref name="prefix"/>.</summary>
+    Task RemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default);
 }

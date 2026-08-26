@@ -59,8 +59,6 @@ export class InquiryList {
     this.state.clearFilters();
   }
 
-  // UpdatedAt defaults to CreatedAt on insert (Schema.sql), so it's only meaningful — "the last
-  // update date, if available" — once the inquiry has actually been changed since creation.
   protected wasUpdated(inquiry: InquiryResponse): boolean {
     return inquiry.updatedAt !== inquiry.createdAt;
   }

@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Inquiries.Services;
@@ -5,6 +6,7 @@ namespace Inquiries.Services;
 public class CacheService : ICacheService
 {
     private readonly IMemoryCache _memoryCache;
+    private readonly ConcurrentDictionary<string, byte> _trackedKeys = new();
 
     public CacheService(IMemoryCache memoryCache)
     {
@@ -18,6 +20,8 @@ public class CacheService : ICacheService
 
     public Task SetAsync<T>(string key, T value, TimeSpan? ttl = null, bool useSlidingExpiration = false, CancellationToken cancellationToken = default)
     {
+        _trackedKeys.TryAdd(key, 0);
+
         if (!ttl.HasValue)
         {
             _memoryCache.Set(key, value);
@@ -30,6 +34,8 @@ public class CacheService : ICacheService
         else
             options.AbsoluteExpirationRelativeToNow = ttl.Value;
 
+        options.RegisterPostEvictionCallback((evictedKey, _, _, _) => _trackedKeys.TryRemove((string)evictedKey, out _));
+
         _memoryCache.Set(key, value, options);
         return Task.CompletedTask;
     }
@@ -37,6 +43,21 @@ public class CacheService : ICacheService
     public Task RemoveAsync(string key, CancellationToken cancellationToken = default)
     {
         _memoryCache.Remove(key);
+        _trackedKeys.TryRemove(key, out _);
+        return Task.CompletedTask;
+    }
+
+    public Task RemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
+    {
+        foreach (var key in _trackedKeys.Keys)
+        {
+            if (key.StartsWith(prefix, StringComparison.Ordinal))
+            {
+                _memoryCache.Remove(key);
+                _trackedKeys.TryRemove(key, out _);
+            }
+        }
+
         return Task.CompletedTask;
     }
 }
